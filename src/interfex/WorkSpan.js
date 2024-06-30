@@ -9,7 +9,11 @@ export class WorkSpan {
     constructor(login, logout) {
         this.login = login;
         this.logout = logout;
+    }
 
+
+    duration(){
+        return this.logout.subtract(this.login);
     }
 }
 

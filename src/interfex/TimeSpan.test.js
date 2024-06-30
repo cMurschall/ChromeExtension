@@ -39,4 +39,11 @@ describe('TimeSpan', () => {
         expect(result.hours).toBe(0);
         expect(result.minutes).toBe(25);
     });
+
+    test('total hours', () => {
+        expect(new TimeSpan(1, 0).totalHours()).toBeCloseTo(1.);
+        expect(new TimeSpan(1, 15).totalHours()).toBeCloseTo(1.25);
+        expect(new TimeSpan(1, 30).totalHours()).toBeCloseTo(1.50);
+        expect(new TimeSpan(1, 45).totalHours()).toBeCloseTo(1.75);
+    });
 });

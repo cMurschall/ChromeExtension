@@ -8,7 +8,7 @@ const logoUrl = chrome.runtime.getURL(logo);
 </script>
 
 <template>
-  <img alt="Vue logo" :src="logoUrl" />
+  <!-- <img alt="Vue logo" :src="logoUrl" /> -->
   <MainView />
 </template>
 

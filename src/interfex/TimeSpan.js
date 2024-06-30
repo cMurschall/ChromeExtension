@@ -28,6 +28,41 @@ export class TimeSpan {
         return new TimeSpan(hours, minutes);
     }
 
+    totalHours() {
+        return this.hours + this.minutes / 60;
+    }
+
+
+
+    /**
+      Calculates the sum of a list of {Timespan}.
+      @param {TimeSpan[]} times - A list of {TimeSpan}
+      @returns {TimeSpan} - The summed time
+      */
+    static Sum(times) {
+        let time = TimeSpan.fromHours(0);
+        for (let index = 0; index < times.length; index++) {
+            time = time.add(times[index]);
+        }
+        return time;
+    }
+
+
+    /**
+  Gets the maximum the sum of a list of {Timespan}.
+  @param {TimeSpan[]} times - A list of {TimeSpan}
+  @returns {TimeSpan} - The summed time
+  */
+    static Max(times) {
+        let maxTime = TimeSpan.fromHours(0);
+        for (let index = 0; index < times.length; index++) {
+            if (times[index].isGreaterThan(maxTime)) {
+                maxTime = times[index];
+            }
+        }
+        return maxTime;
+    }
+
     /**
     Add another TimeSpan to this instance.
     @param {TimeSpan} other - The other TimeSpan.
@@ -47,4 +82,25 @@ export class TimeSpan {
         const totalMinutes = (this.hours - other.hours) * 60 + this.minutes - other.minutes;
         return TimeSpan.fromMinutes(totalMinutes);
     }
+
+
+    /**
+    Returns true if the other time span is longer
+    @param {TimeSpan} other - The other TimeSpan.
+    @returns {boolean}
+    */
+    isLessThan(other) {
+        return this.totalHours() < other.totalHours();
+    }
+
+    /**
+    Returns true if the other time span is shorter
+    @param {TimeSpan} other - The other TimeSpan.
+    @returns {boolean}
+    */
+    isGreaterThan(other) {
+        return this.totalHours() > other.totalHours();
+    }
+
+
 }

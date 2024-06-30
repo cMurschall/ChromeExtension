@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { TimeOnly } from './TimeOnly'
+import { TimeSpan } from './TimeSpan'
 
 describe('TimeOnly', () => {
     test('should correctly initialize hours and minutes', () => {
@@ -35,7 +36,7 @@ describe('TimeOnly', () => {
         expect(span.minutes).toBe(0);
     });
 
-    
+
     test('should return the minimum of multiple TimeOnly instances', () => {
         const time1 = new TimeOnly(10, 30);
         const time2 = new TimeOnly(8, 45);
@@ -76,6 +77,15 @@ describe('TimeOnly', () => {
         const time = TimeOnly.FromTimeString("5:31pm")
         expect(time.hours).toBe(17);
         expect(time.minutes).toBe(31);
+    });
+
+    test('should correctly add a TimeSpan to a TimeOnly instance', () => {
+        const time = new TimeOnly(10, 30);
+        const span = new TimeSpan(1, 45);
+        const result = time.addTimeSpan(span);
+
+        expect(result.hours).toBe(12);
+        expect(result.minutes).toBe(15);
     });
 
 

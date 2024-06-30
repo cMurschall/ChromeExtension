@@ -1,4 +1,4 @@
-import {TimeSpan} from './TimeSpan'
+import { TimeSpan } from './TimeSpan'
 
 /**
 class representing a time of day (hours and minutes).
@@ -26,11 +26,24 @@ export class TimeOnly {
         return new TimeSpan(0, diffMinutes);
     }
 
-    
-    totalHours() {
-        return this.hours + this.minutes / 60;
+
+    /**
+    Add a TimeOnly to this instance.
+    @param {TimeSpan} other - The TimeSpan to add
+    @returns {TimeOnly} - The TimeSpan representing the difference.
+    */
+    addTimeSpan(span) {
+        const totalMinutes = this.hours * 60 + this.minutes + span.hours * 60 + span.minutes;
+        const newHours = Math.floor(totalMinutes / 60);
+        const newMinutes = totalMinutes % 60;
+        return new TimeOnly(newHours, newMinutes);
     }
 
+    /**
+Finds the min instance
+@param {TimeOnly[]} times
+@returns {TimeOnly}
+*/
     static Min(times) {
         if (times.length === 0) throw new Error("At least one TimeOnly instance is required");
         return times.reduce((min, current) => {
@@ -39,7 +52,11 @@ export class TimeOnly {
             return currentTotalMinutes < minTotalMinutes ? current : min;
         });
     }
-
+    /**
+Finds the max instance
+@param {TimeOnly[]} times
+@returns {TimeOnly}
+*/
     static Max(times) {
         if (times.length === 0) throw new Error("At least one TimeOnly instance is required");
         return times.reduce((max, current) => {
