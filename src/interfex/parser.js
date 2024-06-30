@@ -20,9 +20,13 @@ export function parseWorkdaysTable(table) {
     let currentTime = new Date(); // Get current time
     let rows = table.querySelectorAll('tbody > tr');
 
+
     rows.forEach(row => {
         let cells = row.querySelectorAll('td');
-        if (cells.length >= 8) {
+
+
+
+        if (cells.length >= 6) {
             // Check if the first cell contains a date
             let dateCell = getTextFromElement(cells[0]);
 
@@ -41,7 +45,6 @@ export function parseWorkdaysTable(table) {
             let beginTime = getTextFromElement(cells[2]);
             // If we are on the last row and we hav not logged out, use the current time as the end time
             let endTime = getTextFromElement(cells[3]) || `${currentTime.getHours()}:${currentTime.getMinutes()}`;
-
             if (beginTime && endTime) {
                 const login = TimeOnly.FromTimeString(beginTime.trim());
                 const logout = TimeOnly.FromTimeString(endTime.trim());
