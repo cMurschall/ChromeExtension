@@ -33,6 +33,11 @@ export class TimeSpan {
     }
 
 
+    totalMinutes() {
+        return this.hours * 60 + this.minutes;
+    }
+
+
 
     /**
       Calculates the sum of a list of {Timespan}.

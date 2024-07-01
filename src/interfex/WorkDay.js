@@ -7,7 +7,7 @@ import {
     NormalWorkTimeLimit,
     ExtendedBreakTime,
     ExtendedWorkTimeLimit,
-} from './constants'
+} from './Constants'
 
 /**
  * 
@@ -121,7 +121,7 @@ export class WorkDay {
 
     workEndTime(){
         const come = TimeOnly.Min(this.times.map(x => x.login));
-        return come.addTimeSpan(NormalWorkTime).addTimeSpan(this.breakTime());
+        return come.addTimeSpan(NormalWorkTime).addTimeSpan(TimeSpan.Max([this.breakTime(), TimeSpan.fromMinutes(30)]));
     }
 
     overtime(){

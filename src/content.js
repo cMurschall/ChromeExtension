@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import { findTable, updateWorkDaysTable } from './interfex/dom'
-import { parseWorkdaysTable } from './interfex/parser'
+import { findTable, updateWorkDaysTable } from './interfex/Dom'
+import { parseWorkdaysTable } from './interfex/Parser'
 
 const root = document.createElement('div')
 root.id = 'crx-root'

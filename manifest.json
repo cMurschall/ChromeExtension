@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "icons": {
         "256": "icon.png"
-      },
+    },
     "action": {
         "default_popup": "index.html"
     },

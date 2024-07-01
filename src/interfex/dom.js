@@ -1,4 +1,14 @@
 
+import {
+    NormalBreakTime,
+    NormalWorkTime,
+    NormalWorkTimeLimit,
+    ExtendedBreakTime,
+    ExtendedWorkTimeLimit,
+} from './Constants'
+
+
+
 function getTextFromElement(element) {
     if (element.innerText == undefined) {
         return element.textContent.trim();
@@ -118,10 +128,10 @@ export function updateWorkDaysTable(table, workdayList) {
                 const workDay = workdayList.find(x => x.date == dateCell.trim());
                 if (workDay != undefined && workDay.times.length) {
                     const workHours = workDay.workTime().totalHours();
-                    const breakHours = workDay.breakTime().totalHours();
+                    const breakHours = workDay.breakTime().totalMinutes();
                     const overTime = workDay.overtime().totalHours();
 
-                    let summary = `Worked: ${workHours.toFixed(2)}h (${breakHours.toFixed(2)}h break)`;
+                    let summary = `Worked: ${workHours.toFixed(2)}h (${breakHours.toFixed(0)}min break)`;
 
                     // if workEndTime is in future, append:
 
@@ -138,7 +148,12 @@ export function updateWorkDaysTable(table, workdayList) {
                     // format italic
                     cells[1].style['font-style'] = "italic";
 
-                    // cells[1].innerText = `${workDay.overtime().totalHours()}`
+
+                    // const low = NormalWorkTimeLimit.totalHours();
+                    // const hight = ExtendedWorkTimeLimit.totalHours();
+                    // const optimum = NormalWorkTime.totalHours();
+
+                    // cells[4].innerHTML = `<meter min="0" max="10" low="${low}" high="${hight}" optimum="${optimum}" value="${workHours}"/>`;
                 }
             }
         }

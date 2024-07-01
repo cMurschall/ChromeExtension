@@ -46,4 +46,12 @@ describe('TimeSpan', () => {
         expect(new TimeSpan(1, 30).totalHours()).toBeCloseTo(1.50);
         expect(new TimeSpan(1, 45).totalHours()).toBeCloseTo(1.75);
     });
+
+
+    test('total minutes', () => {
+        expect(new TimeSpan(1, 0).totalMinutes()).toBeCloseTo(60);
+        expect(new TimeSpan(1, 15).totalMinutes()).toBeCloseTo(75);
+        expect(new TimeSpan(1, 30).totalMinutes()).toBeCloseTo(90);
+        expect(new TimeSpan(1, 45).totalMinutes()).toBeCloseTo(105);
+    });
 });

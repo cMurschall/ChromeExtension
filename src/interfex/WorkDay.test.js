@@ -104,11 +104,18 @@ describe('WorkDay', () => {
     });
 
 
-    // test('Friday 2', () => {
-    //     const workday = new WorkDay("testData", testData[1].workSpans);
-    //     const workTime = workday.workTime();
-    //     expect(workTime.totalHours()).toBeCloseTo( testData[1].expectedWorkTime);
-    // });
 
+    test('workday end', () => {
+        const workday = new WorkDay("testData", [new WorkSpan(new TimeOnly(8, 17), new TimeOnly(8, 17))]);
+        workday.times[0].logout = workday.workEndTime();
+        expect(workday.overtime().totalHours()).toBeCloseTo(0);
+        expect(workday.workTime().totalHours()).toBeCloseTo(7.9);
+    });
+
+    test('workday end2', () => {
+        const workday = new WorkDay("testData", [new WorkSpan(new TimeOnly(8, 17), new TimeOnly(16, 41))]);
+        expect(workday.overtime().totalHours()).toBeCloseTo(0);
+        expect(workday.workTime().totalHours()).toBeCloseTo(7.9);
+    });
 });
 
