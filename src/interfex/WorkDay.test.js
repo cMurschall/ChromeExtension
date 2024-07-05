@@ -1,7 +1,8 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, assertType, expectTypeOf  } from 'vitest'
 import { WorkDay } from './WorkDay'
 import { TimeOnly } from './TimeOnly';
 import { WorkSpan } from './WorkSpan';
+import { DateOnly } from './DateOnly';
 
 
 const testData = [
@@ -116,6 +117,19 @@ describe('WorkDay', () => {
         const workday = new WorkDay("testData", [new WorkSpan(new TimeOnly(8, 17), new TimeOnly(16, 41))]);
         expect(workday.overtime().totalHours()).toBeCloseTo(0);
         expect(workday.workTime().totalHours()).toBeCloseTo(7.9);
+    });
+
+
+    test('it parses german date', () => {
+        const workday = new WorkDay("Mo.,01.07.", []);
+        expect(workday.workDate().getMonth()).toBe(7);
+        expect(workday.workDate().getDay()).toBe(1);
+    });
+
+    test('it parses english date', () => {
+        const workday = new WorkDay("Mon,7/1", []);
+        expect(workday.workDate().getMonth()).toBe(7);
+        expect(workday.workDate().getDay()).toBe(1);
     });
 });
 

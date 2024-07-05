@@ -1,6 +1,7 @@
 import { WorkSpan } from './WorkSpan'
 import { TimeSpan } from './TimeSpan'
 import { TimeOnly } from './TimeOnly'
+import { DateOnly } from './DateOnly'
 import {
     NormalBreakTime,
     NormalWorkTime,
@@ -135,5 +136,13 @@ export class WorkDay {
      */
     workTimePure() {
         return TimeSpan.Sum(this.times.map(x => x.duration()));
+    }
+
+    /**
+     * 
+     * @returns {DateOnly} - The date of the workday
+     */
+    workDate(){
+        return  DateOnly.parseDateOnly(this.date);
     }
 }
