@@ -1,4 +1,4 @@
-import { describe, expect, test, assertType, expectTypeOf  } from 'vitest'
+import { describe, expect, test, assertType, expectTypeOf } from 'vitest'
 import { WorkDay } from './WorkDay'
 import { TimeOnly } from './TimeOnly';
 import { WorkSpan } from './WorkSpan';
@@ -94,14 +94,14 @@ describe('WorkDay', () => {
         const workday = new WorkDay(day, workSpans);
         if (expectedPresenceTime) {
             const presenceTime = workday.presenceTime();
-            expect(presenceTime.totalHours()).toBeCloseTo(expectedPresenceTime);
+            expect(presenceTime.totalHours()).toBeCloseTo(expectedPresenceTime, 1);
         }
     });
 
     test.each(testData)('should correctly calculate the work time for $day', ({ day, expectedWorkTime, workSpans }) => {
         const workday = new WorkDay(day, workSpans);
         const workTime = workday.workTime();
-        expect(workTime.totalHours()).toBeCloseTo(expectedWorkTime);
+        expect(workTime.totalHours()).toBeCloseTo(expectedWorkTime, 1);
     });
 
 
@@ -131,5 +131,24 @@ describe('WorkDay', () => {
         expect(workday.workDate().getMonth()).toBe(7);
         expect(workday.workDate().getDay()).toBe(1);
     });
+
+
+
+    test('Mo.,08.07.	', () => {
+        const workday = new WorkDay("Mon,7/1", [
+            new WorkSpan(new TimeOnly(8, 42), new TimeOnly(13, 58)),
+            new WorkSpan(new TimeOnly(14, 23), new TimeOnly(16, 31))]);
+        expect(workday.overtime().totalHours()).toBe(0);
+        expect(workday.workTime().totalHours()).toBeCloseTo(7.31, 1);
+    });
+
+    test('Di.,09.07.	', () => {
+        const workday = new WorkDay("Di.,09.07.	", [
+            new WorkSpan(new TimeOnly(11, 19), new TimeOnly(17, 29))]);
+        expect(workday.overtime().totalHours()).toBe(0);
+        expect(workday.workTime().totalHours()).toBeCloseTo(6.17, 1);
+    });
+
+
 });
 

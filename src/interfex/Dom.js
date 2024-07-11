@@ -50,14 +50,14 @@ function findStartPageTable() {
 
     var checkClass = doc.getElementsByClassName('iflxHomeTable');
     if (checkClass == undefined || checkClass === undefined) {
-        // console.log("iflxHomeTable is null")
+        console.log("iflxHomeTable is null")
         return null;
     }
 
     //console.log(Array.from(checkClass).length === 0)
 
     if (Array.from(checkClass).length === 0) {
-        // console.log("checkClass is null")
+        console.log("checkClass is null")
         return null;
     }
 
@@ -80,11 +80,11 @@ function findBookingTable() {
 
     var checkClass = doc.getElementsByClassName('iflxBookingsTabReadonly');
     if (checkClass == undefined || checkClass === undefined) {
-        // console.log("iflxBookingsTabReadonly is null")
+        console.log("iflxBookingsTabReadonly is null")
         return null;
     }
     if (checkClass.length === 0) {
-        // console.log("checkClass is null")
+        console.log("checkClass is null")
         return null;
     }
 
@@ -183,22 +183,42 @@ export function updateWorkDaysTable(table, workdayList) {
                 const cellDate = DateOnly.parseDateOnly(dateCell);
                 const index = workdayList.findIndex(x => x.date == dateCell.trim());
                 if (index >= 0) {
+
                     const workDay = workdayList[index]
+                    if (workDay.times.length == 0) {
+                        console.log(`no workday data for ${dateCell}, continuing`)
+                        return;
+                    }
+
                     const workHours = workDay.workTime().totalHours();
                     const breakHours = workDay.breakTime().totalMinutes();
                     const overTime = workDay.overtime();
 
-                    let summary = `Worked: ${workHours.toFixed(2)}h (${breakHours.toFixed(0)} min break)`;
+                    let summary = `Worked: ${workHours.toFixed(2)}h (with ${breakHours.toFixed(0)} min break)`;
 
-                    let today = new Date();
-                    const isToday = cellDate.getDay() == today.getDay() && cellDate.getMonth() == today.getMonth() + 1;
+                    const isToday = cellDate.isToday()
+                    const hasOvertime = overTime.totalHours() > 0;
 
-                    if (!isToday || overTime.totalHours() > 0) {
+                    if (isToday) {
+                        if (hasOvertime) {
+                            summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
+                        } else {
+                            console.log("overtime is",overTime.totalHours() )
+                            const workEnd = workDay.workEndTime();
+                            summary += `\r\Go home at: ${zeroPad(workEnd.hours, 2)}:${zeroPad(workEnd.minutes, 2)}`
+                        }
+                    } else  if (hasOvertime)
+                    {
                         summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
-                    } else {
-                        const workEnd = workDay.workEndTime();
-                        summary += `\r\Go home at: ${zeroPad(workEnd.hours, 2)}:${zeroPad(workEnd.minutes, 2)}`
                     }
+
+
+                    // if (!isToday || hasOvertime) {
+                    //     summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
+                    // } else {
+                    //     const workEnd = workDay.workEndTime();
+                    //     summary += `\r\Go home at: ${zeroPad(workEnd.hours, 2)}:${zeroPad(workEnd.minutes, 2)}`
+                    // }
 
                     cells[1].innerText = summary;
                     cells[1].style['width'] = "300";

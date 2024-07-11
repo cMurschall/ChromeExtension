@@ -3,12 +3,9 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import MainView from './components/MainView.vue'
 
-import logo from './assets/logo.png';
-const logoUrl = chrome.runtime.getURL(logo);
 </script>
 
 <template>
-  <!-- <img alt="Vue logo" :src="logoUrl" /> -->
   <MainView />
 </template>
 
@@ -19,6 +16,6 @@ const logoUrl = chrome.runtime.getURL(logo);
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  width: 300px;
 }
 </style>

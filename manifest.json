@@ -7,6 +7,7 @@
         "256": "icon.png"
     },
     "action": {
+        "default_title": "Interflex - Pünktlich Feierabend",
         "default_popup": "index.html"
     },
     "content_scripts": [

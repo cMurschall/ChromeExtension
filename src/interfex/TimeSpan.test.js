@@ -21,6 +21,11 @@ describe('TimeSpan', () => {
         expect(span.minutes).toBe(30);
     });
 
+    // test('should correctly create and round TimeSpan from hours', () => {
+    //     const span = TimeSpan.fromHours(9.24);
+    //     expect(span.totalHours()).toBeCloseTo(9.24)
+    // });
+
 
     test('should correctly add two TimeSpan instances', () => {
         const span1 = new TimeSpan(1, 45);
@@ -53,5 +58,23 @@ describe('TimeSpan', () => {
         expect(new TimeSpan(1, 15).totalMinutes()).toBeCloseTo(75);
         expect(new TimeSpan(1, 30).totalMinutes()).toBeCloseTo(90);
         expect(new TimeSpan(1, 45).totalMinutes()).toBeCloseTo(105);
+    });
+
+
+    test('max', () => {
+        var max = TimeSpan.Max([TimeSpan.Empty(), TimeSpan.fromHours(0.5)]);
+        expect(max.totalHours()).toBeCloseTo(0.5);
+    });
+
+    test('max throws error if not an array is given', () => {
+        expect(() => {
+            TimeSpan.Max(TimeSpan.Empty(), TimeSpan.Empty())
+        }).toThrow();
+    });
+
+    test('sum throws error if not an array is given', () => {
+        expect(() => {
+            TimeSpan.Sum(TimeSpan.Empty(), TimeSpan.Empty())
+        }).toThrow();
     });
 });

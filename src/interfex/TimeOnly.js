@@ -45,6 +45,9 @@ Finds the min instance
 @returns {TimeOnly}
 */
     static Min(times) {
+        if(!Array.isArray(times)){
+            throw new Error('Cannot calculate Min, given parameter is not an array.');
+        }
         if (times.length === 0) throw new Error("At least one TimeOnly instance is required");
         return times.reduce((min, current) => {
             const minTotalMinutes = min.hours * 60 + min.minutes;
@@ -53,11 +56,14 @@ Finds the min instance
         });
     }
     /**
-Finds the max instance
-@param {TimeOnly[]} times
-@returns {TimeOnly}
-*/
+        Finds the max instance
+        @param {TimeOnly[]} times
+        @returns {TimeOnly}
+        */
     static Max(times) {
+        if(!Array.isArray(times)){
+            throw new Error('Cannot calculate Max, given parameter is not an array.');
+        }
         if (times.length === 0) throw new Error("At least one TimeOnly instance is required");
         return times.reduce((max, current) => {
             const maxTotalMinutes = max.hours * 60 + max.minutes;

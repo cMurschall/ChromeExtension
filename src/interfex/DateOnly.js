@@ -46,6 +46,17 @@ export class DateOnly {
         return this.month === other.getMonth() && this.day === other.getDay();
     }
 
+    /**
+     * Checks if DateOnly is today
+     * @returns {boolean}
+     */
+    isToday(){
+        const d = new Date();
+        const todayDay = d.getDate();
+        const todayMonth = d.getMonth() + 1;
+        return this.getDay() == todayDay && this.getMonth() == todayMonth;
+    }
+
 /**
  * Parses a date string
  * @param {string} dateString 

@@ -125,8 +125,13 @@ export class WorkDay {
         return come.addTimeSpan(NormalWorkTime).addTimeSpan(TimeSpan.Max([this.breakTime(), TimeSpan.fromMinutes(30)]));
     }
 
+        /**
+     * Calculate the overtime worked time
+     * @returns {TimeSpan} - The over time.
+     */
     overtime(){
-        return this.workTime().subtract(NormalWorkTime);
+        const overtime =  this.workTime().subtract(NormalWorkTime);
+        return TimeSpan.Max([TimeSpan.Empty(), overtime]);
     }
 
 

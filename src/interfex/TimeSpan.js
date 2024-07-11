@@ -45,6 +45,9 @@ export class TimeSpan {
       @returns {TimeSpan} - The summed time
       */
     static Sum(times) {
+        if(!Array.isArray(times)){
+            throw new Error('Cannot calculate Sum, given parameter is not an array.');
+        }
         let time = TimeSpan.fromHours(0);
         for (let index = 0; index < times.length; index++) {
             time = time.add(times[index]);
@@ -59,6 +62,9 @@ export class TimeSpan {
   @returns {TimeSpan} - The summed time
   */
     static Max(times) {
+        if(!Array.isArray(times)){
+            throw new Error('Cannot calculate Max, given parameter is not an array.');
+        }
         let maxTime = TimeSpan.fromHours(0);
         for (let index = 0; index < times.length; index++) {
             if (times[index].isGreaterThan(maxTime)) {
@@ -66,6 +72,16 @@ export class TimeSpan {
             }
         }
         return maxTime;
+    }
+
+
+    
+    /**
+     * Returns an empty TimeSpan
+     * @returns {TimeSpan} - A span with 0 hours.
+     */
+    static Empty(){
+        return new TimeSpan(0, 0);
     }
 
     /**

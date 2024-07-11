@@ -89,4 +89,29 @@ describe('TimeOnly', () => {
     });
 
 
+    test('max throws error if not an array is given', () => {
+        expect(() => {
+            TimeOnly.Max(new TimeOnly(0,0), new TimeOnly(0,0))
+        }).toThrow();
+    });
+
+    test('max throws error if array is empty', () => {
+        expect(() => {
+            TimeOnly.Max([])
+        }).toThrow();
+    });
+
+
+    test('min throws error if not an array is given', () => {
+        expect(() => {
+            TimeOnly.Min(new TimeOnly(0,0), new TimeOnly(0,0))
+        }).toThrow();
+    });
+
+    test('min throws error if array is empty', () => {
+        expect(() => {
+            TimeOnly.Min([])
+        }).toThrow();
+    });
+
 });

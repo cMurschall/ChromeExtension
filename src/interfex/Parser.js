@@ -47,9 +47,15 @@ export function parseWorkdaysTable(table) {
             let endTime = getTextFromElement(cells[3]) || `${currentTime.getHours()}:${currentTime.getMinutes()}`;
             if (beginTime && endTime) {
                 const login = TimeOnly.FromTimeString(beginTime.trim());
+                // console.log("found login time", login )
+
                 const logout = TimeOnly.FromTimeString(endTime.trim());
+                // console.log("found logout time", logout )
+
                 const span = new WorkSpan(login, logout);
                 workdays[workdays.length - 1].times.push(span);
+            }else{
+                console.log("no begin and end time found", {beginTime, endTime})
             }
         }
     });

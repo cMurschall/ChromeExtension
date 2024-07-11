@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "release": "vite build && xcopy /E /I /Y .\\dist T:\\Murschall_Christian\\ChromeExtension",
     "preview": "vite preview",
     "test": "vitest"
   },
