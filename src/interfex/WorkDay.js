@@ -35,14 +35,20 @@ function actualBreaksTaken(times) {
  * @returns {TimeSpan} the calculated sum of break times according to german Arbeitsrecht
  */
 function calculateBreak(presenceTime, breakTimes) {
+    if (!Array.isArray(breakTimes)) {
+        throw new Error('Cannot calculate Break, given parameter "breakTimes" is not an array.');
+    }
+
     let breaksTakenSoFar = TimeSpan.Sum(breakTimes);
-    let orderedBreaks = Array.from(breakTimes).toSorted((a, b) => b.totalHours()-a.totalHours());
+    let orderedBreaks = Array.from(breakTimes).toSorted((a, b) => b.totalHours() - a.totalHours());
 
 
     if (presenceTime.isLessThan(NormalWorkTimeLimit)) {
         return breaksTakenSoFar;
     }
-    if (presenceTime.isGreaterThan(ExtendedWorkTimeLimit)) {
+
+    const presenceWithLawFullBreaks = presenceTime.subtract(TimeSpan.Max([breaksTakenSoFar, NormalBreakTime]));
+    if (presenceWithLawFullBreaks.isGreaterThan(ExtendedWorkTimeLimit)) {
         // check for 45 breaks after 9 hours todo
         if (breaksTakenSoFar.isLessThan(ExtendedBreakTime)) {
             return ExtendedBreakTime;
@@ -52,13 +58,13 @@ function calculateBreak(presenceTime, breakTimes) {
 
 
     // no break
-    if(orderedBreaks.length == 0){
+    if (orderedBreaks.length == 0) {
         return TimeSpan.fromMinutes(30);
     }
-    if(orderedBreaks[0].isLessThan(TimeSpan.fromMinutes(10))){
+    if (orderedBreaks[0].isLessThan(TimeSpan.fromMinutes(10))) {
         return TimeSpan.fromMinutes(30).add(breaksTakenSoFar);
     }
-    
+
     // do we have a 30 minute break?
     if (orderedBreaks[0].isGreaterThan(NormalBreakTime)) {
         return breaksTakenSoFar;
@@ -69,10 +75,10 @@ function calculateBreak(presenceTime, breakTimes) {
     if (orderedBreaks.length > 1) {
         let pause1Okay = orderedBreaks[0].isGreaterThan(TimeSpan.fromMinutes(15));
         let pause2Okay = orderedBreaks[1].isGreaterThan(TimeSpan.fromMinutes(15));
-        if(!pause1Okay){
+        if (!pause1Okay) {
             orderedBreaks[0] = TimeSpan.fromMinutes(30);
         }
-        else if(!pause2Okay){
+        else if (!pause2Okay) {
             orderedBreaks[0] = TimeSpan.fromMinutes(30);
         }
         return TimeSpan.Sum(orderedBreaks);
@@ -93,6 +99,7 @@ export class WorkDay {
         this.date = date;
         this.times = times;
     }
+
     /**
      * calculate the total presence time
      * @returns {TimeSpan} - The time from the first login to the last logout
@@ -101,8 +108,16 @@ export class WorkDay {
         const come = TimeOnly.Min(this.times.map(x => x.login));
         const left = TimeOnly.Max(this.times.map(x => x.logout));
         return left.subtract(come);
-
     }
+
+    /**
+     * gets the first login time
+     * @returns {TimeSpan} 
+     */
+    firstLogIn() {
+        return TimeOnly.Min(this.times.map(x => x.login));
+    }
+
     /**
      * Calculate the resulting interflex break
      * @returns {TimeSpan} - The total break time taken.
@@ -120,18 +135,17 @@ export class WorkDay {
         return this.presenceTime().subtract(this.breakTime())
     }
 
-    workEndTime(){
+    workEndTime() {
         const come = TimeOnly.Min(this.times.map(x => x.login));
         return come.addTimeSpan(NormalWorkTime).addTimeSpan(TimeSpan.Max([this.breakTime(), TimeSpan.fromMinutes(30)]));
     }
 
-        /**
-     * Calculate the overtime worked time
-     * @returns {TimeSpan} - The over time.
-     */
-    overtime(){
-        const overtime =  this.workTime().subtract(NormalWorkTime);
-        return TimeSpan.Max([TimeSpan.Empty(), overtime]);
+    /**
+ * Calculate the overtime worked time
+ * @returns {TimeSpan} - The over time.
+ */
+    overtime() {
+        return this.workTime().subtract(NormalWorkTime);
     }
 
 
@@ -147,7 +161,7 @@ export class WorkDay {
      * 
      * @returns {DateOnly} - The date of the workday
      */
-    workDate(){
-        return  DateOnly.parseDateOnly(this.date);
+    workDate() {
+        return DateOnly.parseDateOnly(this.date);
     }
 }

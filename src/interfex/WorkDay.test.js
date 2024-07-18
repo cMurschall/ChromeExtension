@@ -138,17 +138,23 @@ describe('WorkDay', () => {
         const workday = new WorkDay("Mon,7/1", [
             new WorkSpan(new TimeOnly(8, 42), new TimeOnly(13, 58)),
             new WorkSpan(new TimeOnly(14, 23), new TimeOnly(16, 31))]);
-        expect(workday.overtime().totalHours()).toBe(0);
+        expect(workday.overtime().totalHours()).toBeCloseTo(-1.58);
         expect(workday.workTime().totalHours()).toBeCloseTo(7.31, 1);
     });
 
     test('Di.,09.07.	', () => {
         const workday = new WorkDay("Di.,09.07.	", [
             new WorkSpan(new TimeOnly(11, 19), new TimeOnly(17, 29))]);
-        expect(workday.overtime().totalHours()).toBe(0);
+        expect(workday.overtime().totalHours()).toBeCloseTo(-2.733, 1);
         expect(workday.workTime().totalHours()).toBeCloseTo(6.17, 1);
     });
-
+    test('Do.,11.07.', () => {
+        const workday = new WorkDay("Do.,11.07.", [
+            new WorkSpan(new TimeOnly(8, 49), new TimeOnly(18, 13))]);
+        expect(workday.presenceTime().totalHours()).toBeCloseTo(9.4, 1);
+        expect(workday.breakTime().totalHours()).toBeCloseTo(0.50, 1);
+        expect(workday.workTime().totalHours()).toBeCloseTo(8.90, 1);
+    });
 
 });
 

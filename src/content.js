@@ -12,10 +12,6 @@ const app = createApp(App)
 app.mount(root)
 
 
-console.log({mode: process.env.NODE_ENV})
-console.log('hi')
-
-
 
 function start() {
     let table = findTable();
@@ -28,5 +24,3 @@ function start() {
 }
 
 setInterval(() => start(), 1000);
-
-

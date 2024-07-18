@@ -163,8 +163,24 @@ const formatTimeSpan = timeSpan => {
     if (timeSpan.totalHours() > 1) {
         return `${timeSpan.hours.toFixed(0)}:${timeSpan.minutes.toFixed(0)}h`;
     }
-    return `${timeSpan.minutes.toFixed(0)} min`;
+    return `${timeSpan.totalMinutes().toFixed(0)} min`;
 }
+
+const formatDate = date => {
+    return `${zeroPad(date.hours, 2)}:${zeroPad(date.minutes, 2)}`
+}
+
+const updateElement = (element, text) => {
+
+    element.innerText = text;
+    element.style['width'] = "300";
+    element.style['color'] = "red";
+    // format italic
+    element.style['font-style'] = "italic";
+
+}
+
+
 /**
  * 
  * @param {HTMLElement} table 
@@ -172,70 +188,73 @@ const formatTimeSpan = timeSpan => {
  */
 export function updateWorkDaysTable(table, workdayList) {
     let rows = table.querySelectorAll('tbody > tr');
-
     rows.forEach(row => {
         let cells = row.querySelectorAll('td');
-        if (cells.length >= 6) {
-            // Check if the first cell contains a date
-            let dateCell = getTextFromElement(cells[0]);
 
-            if (dateCell) {
-                const cellDate = DateOnly.parseDateOnly(dateCell);
-                const index = workdayList.findIndex(x => x.date == dateCell.trim());
-                if (index >= 0) {
+        if (cells.length < 6) {
+            return;
+        }
 
-                    const workDay = workdayList[index]
-                    if (workDay.times.length == 0) {
-                        console.log(`no workday data for ${dateCell}, continuing`)
-                        return;
-                    }
+        // Check if the first cell contains a date
+        let dateCell = getTextFromElement(cells[0]);
+        if (!dateCell) {
+            return;
+        }
+        const cellDate = DateOnly.parseDateOnly(dateCell);
+        const index = workdayList.findIndex(x => x.date == dateCell.trim());
+        if (index < 0) {
+            return;
+        }
 
-                    const workHours = workDay.workTime().totalHours();
-                    const breakHours = workDay.breakTime().totalMinutes();
-                    const overTime = workDay.overtime();
+        const workDay = workdayList[index]
+        if (workDay.times.length == 0) {
+            console.log(`no workday data for ${dateCell}, continuing`)
+            return;
+        }
 
-                    let summary = `Worked: ${workHours.toFixed(2)}h (with ${breakHours.toFixed(0)} min break)`;
+        const workHours = workDay.workTime().totalHours();
+        const breakHours = workDay.breakTime().totalMinutes();
+        const overTime = workDay.overtime();
 
-                    const isToday = cellDate.isToday()
-                    const hasOvertime = overTime.totalHours() > 0;
+        let summary = `Worked: ${workHours.toFixed(2)}h (with ${breakHours.toFixed(0)} min break)`;
 
-                    if (isToday) {
-                        if (hasOvertime) {
-                            summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
-                        } else {
-                            console.log("overtime is",overTime.totalHours() )
-                            const workEnd = workDay.workEndTime();
-                            summary += `\r\Go home at: ${zeroPad(workEnd.hours, 2)}:${zeroPad(workEnd.minutes, 2)}`
-                        }
-                    } else  if (hasOvertime)
-                    {
-                        summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
-                    }
+        const isToday = cellDate.isToday()
+        const hasOvertime = overTime.totalHours() > 0;
 
+        if (isToday) {
+            if (hasOvertime) {
+                summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
+            } else {
 
-                    // if (!isToday || hasOvertime) {
-                    //     summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
-                    // } else {
-                    //     const workEnd = workDay.workEndTime();
-                    //     summary += `\r\Go home at: ${zeroPad(workEnd.hours, 2)}:${zeroPad(workEnd.minutes, 2)}`
-                    // }
-
-                    cells[1].innerText = summary;
-                    cells[1].style['width'] = "300";
-                    cells[1].style['color'] = "red";
-                    // format italic
-                    cells[1].style['font-style'] = "italic";
+                const workEnd = workDay.workEndTime();
+                summary += `\r\Go home at: ${formatDate(workEnd)}`
 
 
-                    const low = NormalWorkTimeLimit.totalHours();
-                    const hight = ExtendedWorkTimeLimit.totalHours();
-                    const optimum = NormalWorkTime.totalHours();
-
-                    //    cells[4].innerHTML = `<meter min="0" max="10" low="${low}" high="${hight}" optimum="${optimum}" value="${workHours}"/>`;
+                // notify users when the forced break will appear
+                const hasNotTakenBreaks = breakHours < 15;
+                const isNotOverNormalWorkTimeLimit = workDay.workTime().isLessThan(NormalWorkTimeLimit);
+                if (hasNotTakenBreaks && isNotOverNormalWorkTimeLimit) {
+                    const forcedBreakTime = workDay.firstLogIn().addTimeSpan(NormalWorkTimeLimit);
+                    const forcedText = `Forced 30 minute break at: ${formatDate(forcedBreakTime)}`
+                    updateElement(cells[4], forcedText);
                 }
+
+            }
+        } else {
+            if (hasOvertime) {
+                summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
+            } else {
+                summary += `\r\nShorttime: ${formatTimeSpan(overTime)}`
             }
         }
+        updateElement(cells[1], summary);
+
+
+        // const low = NormalWorkTimeLimit.totalHours();
+        // const hight = ExtendedWorkTimeLimit.totalHours();
+        // const optimum = NormalWorkTime.totalHours();
+
+        //    cells[4].innerHTML = `<meter min="0" max="10" low="${low}" high="${hight}" optimum="${optimum}" value="${workHours}"/>`;
+
     });
-
-
 }
