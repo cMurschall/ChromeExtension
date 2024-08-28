@@ -28,6 +28,21 @@ function actualBreaksTaken(times) {
     return breaks;
 }
 
+
+/**
+ * Calculates the break time only with german Arbeitsrecht
+ * @param {TimeSpan[]} breakTimes - The list of actual taken breaks
+ * @returns {TimeSpan} the calculated sum of break times according to german Arbeitsrecht
+ */
+function calculateBreakLaw(breakTimes) {
+    if (!Array.isArray(breakTimes)) {
+        throw new Error('Cannot calculate Break, given parameter "breakTimes" is not an array.');
+    }
+
+    const relevantBreaks = Array.from(breakTimes).filter(x => x.totalMinutes() >= 15)
+    return TimeSpan.Sum(relevantBreaks);
+}
+
 /**
  * Calculates the total break time according to german Arbeitsrecht
  * @param {TimeSpan} presenceTime - The time the worker was present
@@ -89,6 +104,10 @@ function calculateBreak(presenceTime, breakTimes) {
 
 }
 
+
+
+
+
 export class WorkDay {
 
     /**
@@ -122,9 +141,15 @@ export class WorkDay {
      * Calculate the resulting interflex break
      * @returns {TimeSpan} - The total break time taken.
      */
-    breakTime() {
+    breakTimeTotal() {
         const breaksTaken = actualBreaksTaken(this.times);
         return calculateBreak(this.presenceTime(), breaksTaken);
+    }
+
+
+    breakTimeLaw() {
+        const breaksTaken = actualBreaksTaken(this.times);
+        return calculateBreakLaw(breaksTaken);
     }
 
     /**
@@ -132,12 +157,12 @@ export class WorkDay {
      * @returns {TimeSpan} - The total work time.
      */
     workTime() {
-        return this.presenceTime().subtract(this.breakTime())
+        return this.presenceTime().subtract(this.breakTimeTotal())
     }
 
     workEndTime() {
         const come = TimeOnly.Min(this.times.map(x => x.login));
-        return come.addTimeSpan(NormalWorkTime).addTimeSpan(TimeSpan.Max([this.breakTime(), TimeSpan.fromMinutes(30)]));
+        return come.addTimeSpan(NormalWorkTime).addTimeSpan(TimeSpan.Max([this.breakTimeTotal(), TimeSpan.fromMinutes(30)]));
     }
 
     /**

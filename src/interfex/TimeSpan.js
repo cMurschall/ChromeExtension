@@ -4,8 +4,8 @@ export class TimeSpan {
         this.hours = hours + Math.floor(minutes / 60);
         this.minutes = minutes % 60;
         if (this.minutes < 0) {
-            this.minutes += 60;
-            this.hours--;
+            // this.minutes *= -1;
+            this.hours++;
         }
     }
     /**

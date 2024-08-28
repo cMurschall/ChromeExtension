@@ -138,23 +138,43 @@ describe('WorkDay', () => {
         const workday = new WorkDay("Mon,7/1", [
             new WorkSpan(new TimeOnly(8, 42), new TimeOnly(13, 58)),
             new WorkSpan(new TimeOnly(14, 23), new TimeOnly(16, 31))]);
-        expect(workday.overtime().totalHours()).toBeCloseTo(-1.58);
+        expect(workday.overtime().totalHours()).toBeCloseTo(-0.58);
         expect(workday.workTime().totalHours()).toBeCloseTo(7.31, 1);
     });
 
     test('Di.,09.07.	', () => {
         const workday = new WorkDay("Di.,09.07.	", [
             new WorkSpan(new TimeOnly(11, 19), new TimeOnly(17, 29))]);
-        expect(workday.overtime().totalHours()).toBeCloseTo(-2.733, 1);
+        let expectedOvertime = 6.17 - 7.9;
+        expect(expectedOvertime).toBeCloseTo(-1.733, 1);
+        expect(workday.overtime().totalHours()).toBeCloseTo(expectedOvertime, 1);
         expect(workday.workTime().totalHours()).toBeCloseTo(6.17, 1);
     });
     test('Do.,11.07.', () => {
         const workday = new WorkDay("Do.,11.07.", [
             new WorkSpan(new TimeOnly(8, 49), new TimeOnly(18, 13))]);
         expect(workday.presenceTime().totalHours()).toBeCloseTo(9.4, 1);
-        expect(workday.breakTime().totalHours()).toBeCloseTo(0.50, 1);
+        expect(workday.breakTimeTotal().totalHours()).toBeCloseTo(0.50, 1);
         expect(workday.workTime().totalHours()).toBeCloseTo(8.90, 1);
     });
+
+
+    test('Mi.,31.07. test shorttime', () => {
+        const workday = new WorkDay("Mi.,31.07.", [
+            new WorkSpan(new TimeOnly(9, 20), new TimeOnly(17, 25))]);
+        expect(workday.workTime().totalHours()).toBeCloseTo(7.58, 1);
+        expect(workday.overtime().totalMinutes()).toBeCloseTo(-19, 1);
+    });
+
+
+    test('Di.,27.08', () => {
+        const workday = new WorkDay("Di.,27.08.", [
+            new WorkSpan(new TimeOnly(7, 56), new TimeOnly(16, 14))]);
+        expect(workday.workTime().totalHours()).toBeCloseTo(7.8, 1);
+        expect(workday.overtime().totalMinutes()).toBeCloseTo(-6, 1);
+    });
+
+
 
 });
 

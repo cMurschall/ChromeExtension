@@ -213,7 +213,7 @@ export function updateWorkDaysTable(table, workdayList) {
         }
 
         const workHours = workDay.workTime().totalHours();
-        const breakHours = workDay.breakTime().totalMinutes();
+        const breakHours = workDay.breakTimeTotal().totalMinutes();
         const overTime = workDay.overtime();
 
         let summary = `Worked: ${workHours.toFixed(2)}h (with ${breakHours.toFixed(0)} min break)`;
@@ -224,8 +224,23 @@ export function updateWorkDaysTable(table, workdayList) {
         if (isToday) {
             if (hasOvertime) {
                 summary += `\r\nOvertime: ${formatTimeSpan(overTime)}`
-            } else {
 
+                const hasExtendedNormalWorkingTime = workDay.workTime().isGreaterThan(NormalWorkTimeLimit);
+                const hasTakenExtendedWorkingTimeBreaks = workDay.breakTimeLaw().isGreaterThan(ExtendedBreakTime);
+                if(hasExtendedNormalWorkingTime && !hasTakenExtendedWorkingTimeBreaks ){
+                    console.log("busy day")
+                    let forcedBreakTime = workDay.firstLogIn().addTimeSpan(ExtendedWorkTimeLimit);
+                    let forcedText = `Forced 15 minute break at: ${formatDate(forcedBreakTime)}`
+
+                    if(workDay.breakTimeLaw().isLessThan(NormalBreakTime)){
+                        forcedBreakTime = forcedBreakTime.addTimeSpan(NormalBreakTime);
+                        forcedText = `Forced 45 minute break at: ${formatDate(forcedBreakTime)}`
+                    }
+
+                    updateElement(cells[4], forcedText);
+                }
+
+            } else {
                 const workEnd = workDay.workEndTime();
                 summary += `\r\Go home at: ${formatDate(workEnd)}`
 
@@ -233,6 +248,7 @@ export function updateWorkDaysTable(table, workdayList) {
                 // notify users when the forced break will appear
                 const hasNotTakenBreaks = breakHours < 15;
                 const isNotOverNormalWorkTimeLimit = workDay.workTime().isLessThan(NormalWorkTimeLimit);
+
                 if (hasNotTakenBreaks && isNotOverNormalWorkTimeLimit) {
                     const forcedBreakTime = workDay.firstLogIn().addTimeSpan(NormalWorkTimeLimit);
                     const forcedText = `Forced 30 minute break at: ${formatDate(forcedBreakTime)}`

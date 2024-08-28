@@ -39,6 +39,19 @@ export class TimeOnly {
         return new TimeOnly(newHours, newMinutes);
     }
 
+// not tested
+    //   /**
+    // Subtract a TimeSpan from this instance.
+    // @param {TimeSpan} span - The TimeSpan to subtract.
+    // @returns {TimeOnly} - The new TimeOnly instance after subtraction.
+    // */
+    // subtractTimeSpan(span) {
+    //     const totalMinutes = this.hours * 60 + this.minutes - (span.hours * 60 + span.minutes);
+    //     const newHours = Math.floor(totalMinutes / 60);
+    //     const newMinutes = totalMinutes % 60;
+    //     return new TimeOnly(newHours, newMinutes);
+    // }
+
     /**
 Finds the min instance
 @param {TimeOnly[]} times
