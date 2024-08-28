@@ -28,6 +28,26 @@ describe('TimeSpan', () => {
         expect(span.totalMinutes()).toBe(-150);
     });
 
+
+    test('should correctly create TimeSpan from mixed hours and minutes', () => {
+        const span = new TimeSpan(2, -150);
+        expect(span.hours).toBe(0);
+        expect(span.minutes).toBe(-30);
+
+        expect(span.totalMinutes()).toBe(-30);
+    });
+
+
+    test('should correctly create TimeSpan from mixed hours and minutes', () => {
+        const span = new TimeSpan(-2, 150);
+        expect(span.hours).toBe(0);
+        expect(span.minutes).toBe(30);
+
+        expect(span.totalMinutes()).toBe(30);
+    });
+
+
+
     test('should correctly create TimeSpan from hours', () => {
         const span = TimeSpan.fromHours(1.5);
         expect(span.hours).toBe(1);
