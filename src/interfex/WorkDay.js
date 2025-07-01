@@ -11,7 +11,7 @@ import {
 } from './Constants'
 
 /**
- * 
+ *
  * @param {WorkSpan[]} times a list where we see the logged in and logged out times
  * @returns {TimeSpan[]} - The list of actual taken breaks
  */
@@ -131,7 +131,7 @@ export class WorkDay {
 
     /**
      * gets the first login time
-     * @returns {TimeSpan} 
+     * @returns {TimeSpan}
      */
     firstLogIn() {
         return TimeOnly.Min(this.times.map(x => x.login));
@@ -183,7 +183,7 @@ export class WorkDay {
     }
 
     /**
-     * 
+     *
      * @returns {DateOnly} - The date of the workday
      */
     workDate() {

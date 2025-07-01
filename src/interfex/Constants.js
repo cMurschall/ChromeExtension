@@ -1,6 +1,6 @@
 import { TimeSpan } from './TimeSpan'
 
-export const NormalWorkTime = TimeSpan.fromHours(7.9);
+export const NormalWorkTime = TimeSpan.fromHours(37.5/5.0);
 
 
 export const NormalBreakTime = TimeSpan.fromHours(0.5);

@@ -28,11 +28,18 @@ export class TimeSpan {
         return new TimeSpan(hours, minutes);
     }
 
+    /**
+     * Gets the total number of hours as a float.
+     * @returns {number}
+     */
     totalHours() {
         return this.hours + this.minutes / 60;
     }
 
-
+  /**
+     * Gets the total number of minutes.
+     * @returns {number}
+     */
     totalMinutes() {
         return this.hours * 60 + this.minutes;
     }

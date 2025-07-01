@@ -158,17 +158,17 @@ export function addHomeOfficeLoginButton() {
 
 }
 
-const zeroPad = (num, places) => String(num).padStart(places, '0')
+const zeroPad = (num, places) => String(Math.floor(num)).padStart(places, '0')
+
 const formatTimeSpan = timeSpan => {
+
     if (timeSpan.totalHours() > 1) {
-        return `${timeSpan.hours.toFixed(0)}:${timeSpan.minutes.toFixed(0)}h`;
+        return `${timeSpan.hours.toFixed(0)}:${zeroPad(timeSpan.minutes, 2)}h`;
     }
-    return `${timeSpan.totalMinutes().toFixed(0)} min`;
+    return `${zeroPad(timeSpan.totalMinutes(), 2)} min`;
 }
 
-const formatDate = date => {
-    return `${zeroPad(date.hours, 2)}:${zeroPad(date.minutes, 2)}`
-}
+const formatDate = date => `${zeroPad(date.hours, 2)}:${zeroPad(date.minutes, 2)}`
 
 const updateElement = (element, text) => {
 
@@ -182,9 +182,9 @@ const updateElement = (element, text) => {
 
 
 /**
- * 
- * @param {HTMLElement} table 
- * @param {WorkDay[]} workdayList 
+ *
+ * @param {HTMLElement} table
+ * @param {WorkDay[]} workdayList
  */
 export function updateWorkDaysTable(table, workdayList) {
     let rows = table.querySelectorAll('tbody > tr');
@@ -227,12 +227,12 @@ export function updateWorkDaysTable(table, workdayList) {
 
                 const hasExtendedNormalWorkingTime = workDay.workTime().isGreaterThan(NormalWorkTimeLimit);
                 const hasTakenExtendedWorkingTimeBreaks = workDay.breakTimeLaw().isGreaterThan(ExtendedBreakTime);
-                if(hasExtendedNormalWorkingTime && !hasTakenExtendedWorkingTimeBreaks ){
+                if (hasExtendedNormalWorkingTime && !hasTakenExtendedWorkingTimeBreaks) {
                     console.log("busy day")
                     let forcedBreakTime = workDay.firstLogIn().addTimeSpan(ExtendedWorkTimeLimit);
                     let forcedText = `Forced 15 minute break at: ${formatDate(forcedBreakTime)}`
 
-                    if(workDay.breakTimeLaw().isLessThan(NormalBreakTime)){
+                    if (workDay.breakTimeLaw().isLessThan(NormalBreakTime)) {
                         forcedBreakTime = forcedBreakTime.addTimeSpan(NormalBreakTime);
                         forcedText = `Forced 45 minute break at: ${formatDate(forcedBreakTime)}`
                     }

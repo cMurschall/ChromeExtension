@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Interflex - Pünktlich Feierabend",
     "description": "This extension will parse the working times table and display a short summary.",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "icons": {
         "256": "icon.png"
     },
