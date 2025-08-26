@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import { findTable, updateWorkDaysTable, addHomeOfficeLoginButton } from './interfex/Dom'
+import { findTable, findJournal, updateWorkDaysTable,generateMonthJournalPlot, addHomeOfficeLoginButton } from './interfex/Dom'
 import { parseWorkdaysTable } from './interfex/Parser'
 
 const root = document.createElement('div')
@@ -20,6 +20,11 @@ function start() {
         // console.log('parsed workdays:', {workDays})
         updateWorkDaysTable(table, workDays);
     }
+    let journal = findJournal();
+    if (journal) {
+        generateMonthJournalPlot(journal);
+    }
+
     addHomeOfficeLoginButton();
 }
 
