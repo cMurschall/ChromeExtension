@@ -35,7 +35,7 @@ export function findJournal() {
     }
 
     if (Array.from(checkClass).length === 0) {
-        console.log("checkClass is null")
+        //console.log("checkClass is null")
         return null;
     }
 
@@ -80,7 +80,7 @@ function findStartPageTable() {
     //console.log(Array.from(checkClass).length === 0)
 
     if (Array.from(checkClass).length === 0) {
-        console.log("checkClass is null")
+        //console.log("checkClass is null")
         return null;
     }
 
@@ -107,7 +107,7 @@ function findBookingTable() {
         return null;
     }
     if (checkClass.length === 0) {
-        console.log("checkClass is null")
+        //console.log("checkClass is null")
         return null;
     }
 
@@ -317,8 +317,14 @@ export function generateMonthJournalPlot(table) {
         const cells = row.querySelectorAll("td");
         if (cells.length < 11) return;
 
-        const day = cells[0]?.innerText.trim();
+        const rawDay = cells[0]?.innerText;
+        const day = cleanDayText(rawDay);
         if (!day) return;
+
+        const wday = weekdayFrom(day);
+
+
+        if (!wday) return;
 
         const shouldWorkAsString = cells[9]?.innerText.trim();
         const actualWorkAsString = cells[10]?.innerText.trim();
@@ -327,13 +333,13 @@ export function generateMonthJournalPlot(table) {
         const actualWork = parseFloat(actualWorkAsString.replace(',', '.')) || 0;
 
         // Wenn beide 0 sind, überspringen (leere Tage/Wochenende)
-        if (shouldWork === 0 && actualWork === 0) {
-            cumulative.push({ should: cumShould, actual: cumActual, day });
-        };
+        if (shouldWork != 0 && actualWork != 0) {
+            cumShould += shouldWork;
+            cumActual += actualWork;
+        }
 
-        cumShould += shouldWork;
-        cumActual += actualWork;
-        cumulative.push({ should: cumShould, actual: cumActual, day });
+
+        cumulative.push({ should: cumShould, actual: cumActual, wday });
     });
 
     // Canvas & Wrapper sicherstellen
@@ -399,10 +405,11 @@ function ensurePlotCanvasBesideTable(table) {
     return { ctx, canvas };
 }
 
-// Sehr simpler Line-Chart ohne externe Lib
+
+// simple plot logic without 3rd. party.
 function renderPlotBasic(ctx, canvas, cumulative) {
 
-    //  console.log("Rendering plot", { ctx, canvas, cumulative });
+   // console.log("Rendering plot", { ctx, canvas, cumulative });
 
     // Canvas clearen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -469,15 +476,16 @@ function renderPlotBasic(ctx, canvas, cumulative) {
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
 
-    // Indizes all mondays
-    const mondayIdx = [];
+    // Indizes all x ticks
+    const labelIdx = [];
     for (let k = 0; k < n; k++) {
-        const d = (cumulative[k].day || "").toLowerCase().trim();
-        if (/^mo(\.| |ntag)?\b/.test(d)) mondayIdx.push(k); // "Mo.", "Mo ", "Montag"
+        const wd = cumulative[k].wday || weekdayFrom(cumulative[k].day);
+
+        if (wd === "Mo" || wd === "Fr") { labelIdx.push(k); }
     }
 
     // Fallback
-    const indices = mondayIdx.length ? mondayIdx : Array.from({ length: Math.ceil(n / 7) }, (_, i) => i * 7).filter(i => i < n);
+    const indices = labelIdx.length ? labelIdx : Array.from({ length: Math.ceil(n / 7) }, (_, i) => i * 7).filter(i => i < n);
 
     for (const i of indices) {
         const xx = x(i);
@@ -490,8 +498,20 @@ function renderPlotBasic(ctx, canvas, cumulative) {
         ctx.strokeStyle = "#bbb";
         ctx.stroke();
 
+
+        // Vertikale Linie bis Soll-Linie
+        const yySoll = y(cumulative[i].should); // Soll-Wert in Canvas-Koordinaten
+        ctx.beginPath();
+        ctx.moveTo(xx, yy);
+        ctx.lineTo(xx, yySoll);
+        ctx.strokeStyle = "rgba(229,57,53,0.3)"; // rote Linie mit Alpha
+        ctx.setLineDash([2, 4]); // gestrichelt (optional)
+        ctx.stroke();
+        ctx.setLineDash([]);     // Dash zurücksetzen
+
+
         // Label
-        ctx.fillText(cumulative[i].day , xx, yy + 7);
+        ctx.fillText(cumulative[i].wday, xx, yy + 7);
     }
 
     // Linie: Soll (rot)
@@ -540,3 +560,24 @@ function drawLegend(ctx, x, y, items) {
 }
 
 
+function cleanDayText(s) {
+    return (s || "")
+        .normalize("NFKC")
+        .replace(/\u00A0/g, " ")        // NBSP -> Space
+        .replace(/[\u200B-\u200D\uFEFF]/g, "") // Zero-width
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function weekdayFrom(dayStr) {
+    const d = cleanDayText(dayStr).toLowerCase();
+    // Kürzel oder ausgeschrieben
+    if (d.startsWith("mo")) return "Mo"; // Mo., Montag
+    if (d.startsWith("di")) return "Di";
+    if (d.startsWith("mi")) return "Mi";
+    if (d.startsWith("do")) return "Do";
+    if (d.startsWith("fr")) return "Fr";
+    if (d.startsWith("sa")) return "Sa";
+    if (d.startsWith("so")) return "So";
+    return "";
+}
